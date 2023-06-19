@@ -20,6 +20,17 @@ var simpleText = new Konva.Text({
   fill: 'black',
 });
 
+var textNodeDetection = new Konva.Transformer({
+  nodes: [simpleText],
+  // set minimum width of text
+  boundBoxFunc: function (oldBox, newBox) {
+    newBox.width = Math.max(oldBox.width, newBox.width);
+    return newBox;
+  },
+});
+
+layer.add(textNodeDetection);
+
 // add the shapes to the layer
 layer.add(simpleText);
 
@@ -34,6 +45,7 @@ stage.content.addEventListener("click", function(){
   this.firstElementChild.tabIndex = 1;
   this.firstElementChild.focus();
   this.firstElementChild.addEventListener("keydown", (e)=>{
+
 
     if (e.code === 'Backspace'){
       let currentText = String(simpleText.getAttr("text"));
