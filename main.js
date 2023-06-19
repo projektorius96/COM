@@ -24,7 +24,7 @@ var textNodeDetection = new Konva.Transformer({
   nodes: [simpleText],
   // set minimum width of text
   boundBoxFunc: function (oldBox, newBox) {
-    newBox.width = Math.max(oldBox.width, newBox.width);
+    newBox.width = Math.max(oldBox.width, simpleText.text().length);
     return newBox;
   },
 });
