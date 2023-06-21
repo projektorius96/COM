@@ -14,7 +14,7 @@ var layer = new Konva.Layer();
 var simpleText = new Konva.Text({
   x: fullViewportWidth / 16,
   y: fullViewportHeight / 12,
-  text: '|', /* <= Later I could make it as [non-printable], but blink-able char  */
+  text: 'Write some text', /* <= Later I could make it as [non-printable], but blink-able char  */
   fontSize: 16,
   fontFamily: 'Calibri',
   fill: 'black',
@@ -22,17 +22,23 @@ var simpleText = new Konva.Text({
 
 var textNodeDetection = new Konva.Transformer({
   nodes: [simpleText],
-  // set minimum width of text
-  boundBoxFunc: function (oldBox, newBox) {
-    newBox.width = Math.max(oldBox.width, simpleText.text().length);
-    return newBox;
-  },
+  /* empty array disables all Anchors */
+  enabledAnchors: [/* 'middle-left', 'middle-right' */],
+  // // set minimum width of text
+  // boundBoxFunc: function (oldBox, newBox) {
+  //   /* console.log(simpleText.x() + simpleText.text().length); */
+  //   newBox.width = Math.max(simpleText.x() + simpleText.text().length, newBox);
+  //   return newBox;
+  // },
 });
+// textNodeDetection.on('transform', function () {
+//   /* ... */
+// });
 
-layer.add(textNodeDetection);
+globalThis.Transformer = textNodeDetection;
 
 // add the shapes to the layer
-layer.add(simpleText);
+layer.add(...[textNodeDetection, simpleText]);
 
 // add the layer to the stage
 stage.add(layer);
