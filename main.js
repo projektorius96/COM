@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { fullViewportWidth, fullViewportHeight } from './src/viewport.js'
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  console.log(textNodeDetection.width(), simpleText.width(), simpleText.text().length * simpleText.fontSize()); 
+  /* console.log(textNodeDetection.width(), simpleText.width(), simpleText.text().length * simpleText.fontSize()); */
 })
 
 var stage = new Konva.Stage({
@@ -49,12 +49,13 @@ layer.add(...[/* textNodeDetection,  */simpleText]);
 stage.add(layer);
 
 /* === Rich text editing right inside canvas (Konva.js) === */
-
-// DEV_NOTE # the real issue today is text detection, but this could be solved with Transformer @https://konvajs.org/docs/sandbox/Editable_Text.html#sidebar
-// Refer README.md for more...
 stage.content.addEventListener("click", function(){
+
+  document.documentElement.requestFullscreen();
+
   this.firstElementChild.tabIndex = 1;
   this.firstElementChild.focus();
+  this.firstElementChild.style.outline = "none";
 
   // let counter = 0;
   // let timer = setInterval(()=>{
@@ -67,20 +68,24 @@ stage.content.addEventListener("click", function(){
   //   counter++;
   // }, 1000)
 
-  this.firstElementChild.addEventListener("keydown", (e)=>{
+})
+stage.content.firstElementChild.addEventListener("keydown", (e)=>{
 
-    // DEV_NOTE # too much handling, leaving this "make-up" for later to solve ...
-    // clearInterval(timer)
-    // if (simpleText.text().match("|")){
-    //   simpleText.setAttr("text", "")
-    // }
+  /* if (e.code === 'Tab') e.preventDefault() */
 
-    // emulate event via keydown action rather than via action of resizing the textNodeDetection boundingBox
-    textNodeDetection.dispatchEvent(
-      new CustomEvent('transform')
-    )
+  // DEV_NOTE # too much handling, leaving this "make-up" for later to solve ...
+  // clearInterval(timer)
+  // if (simpleText.text().match("|")){
+  //   simpleText.setAttr("text", "")
+  // }
 
-    let currentText = simpleText.getAttr("text");
+  // emulate event via keydown action rather than via action of resizing the textNodeDetection boundingBox
+  textNodeDetection.dispatchEvent(
+    new CustomEvent('transform')
+  )
+
+  let currentText = simpleText.getAttr("text");
+  navigator.keyboard.lock(['Tab'] /* array of e.code[s] */).then(async (a)=>{
     switch (e.code) {
       // DEV_NOTE__IMPORTANT # unhandles control sequences such as , 'Tab', 'Shift', 'CapsLocks', etc. yields weird bug that du/tri/nth-plicates the e.key appended to simpleText
       case 'Backspace':
@@ -93,11 +98,22 @@ stage.content.addEventListener("click", function(){
         simpleText.setAttr("text", currentText + "\n");
         break;
       case 'Tab':
+        await navigator.keyboard.unlock(/* [e.code] */);
+        // NEXT_GOAL : change 'Tab' with some other physical combination such as 'Ctrl + ]'
         simpleText.setAttr("text", simpleText.getAttr("text") + "\t");
         break;
       default:
         simpleText.setAttr("text", simpleText.getAttr("text") + e.key);
     }
+  });
 
-  })
+})
+stage.content.firstElementChild.addEventListener('blur', function(){
+  // /* console.log(this.activeElement); */
+  // if (document.activeElement){
+  //   document.exitFullscreen()
+  // }
+  this.tabIndex = 1;
+  this.focus();
+  // this.firstElementChild.style.outline = "none";
 })
