@@ -43,7 +43,7 @@ layer.add(...[/* textNodeDetection,  */simpleText]);
 stage.add(layer);
 
 /* === Rich text editing right inside canvas (Konva.js) === */
-const canvas = layer.getCanvas()._canvas
+const canvas = layer.getCanvas()._canvas;
 stage.content.addEventListener("click", async function(){
 
   await document.documentElement.requestFullscreen();
@@ -52,6 +52,19 @@ stage.content.addEventListener("click", async function(){
   canvas.tabIndex = 1;
   canvas.focus();
   canvas.style.outline = "none";
+
+  // DEV_NOTE # text_cursor (ibeam) work very buggy, better find a way to keep blinking a wee cursor-like shape that follows along
+  // let counter = 0;
+  /* let text_cursor = new RegExp('\u{1D100}').source; */
+  // setInterval(()=>{
+  //   if(counter % 2){
+  //     simpleText.setAttr("text", simpleText.text().replace(text_cursor, ""))
+  //   }
+  //   else {
+  //     simpleText.setAttr("text", simpleText.text() + text_cursor)
+  //   }
+  //   counter++;
+  // }, 750)
 
 })
 
